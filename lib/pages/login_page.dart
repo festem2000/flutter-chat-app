@@ -1,5 +1,6 @@
 import 'package:chat/helpers/mostrar_alerta.dart';
 import 'package:chat/services/auth_service.dart';
+import 'package:chat/services/socket_service.dart';
 import 'package:chat/widget/boton_azul.dart';
 import 'package:chat/widget/custom_input.dart';
 import 'package:chat/widget/labels.dart';
@@ -17,8 +18,7 @@ class LoginPage extends StatelessWidget {
             physics: BouncingScrollPhysics(),
             child: Container(
               height: MediaQuery.of(context).size.height * .9,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              child: ListView(
                 children: [
                   Logo(titulo: 'Messenger'),
                   _Form(),
@@ -45,11 +45,12 @@ class _Form extends StatefulWidget {
 }
 
 class __FormState extends State<_Form> {
+  final emailCtrl = TextEditingController();
+  final passCtrl = TextEditingController();
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context, listen: false);
-    final emailCtrl = TextEditingController();
-    final passCtrl = TextEditingController();
+    final sockettServicce = Provider.of<SocketService>(context);
 
     return Container(
       margin: EdgeInsets.only(top: 40),
@@ -81,8 +82,8 @@ class __FormState extends State<_Form> {
                         emailCtrl.text.trim(), passCtrl.text.trim());
 
                     if (loginOK) {
-                      //TODO: Conectar a nuestro servidor
-
+                      sockettServicce.connect();
+                      print(sockettServicce.serverStatus);
                       Navigator.pushReplacementNamed(context, 'usuarios');
                     } else {
                       mostrarAlerta(context, 'Login incorrecto',
